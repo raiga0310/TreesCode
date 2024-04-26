@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
 
@@ -19,29 +19,20 @@ const ime_characters = [
 ];
 function App() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [content, setContent] = useState("");
 
-  async function echo() {
-    setContent(await invoke("echo", { content }));
+  function insertCharacter(char: string) {
+    if (textareaRef.current === null) {
+      return;
+    }
+    let content = textareaRef.current.value;
+    const start = content.substring(0, textareaRef.current.selectionStart);
+    const end = content.substring(textareaRef.current.selectionEnd);
+    content = start + char + end;
+    textareaRef.current.value = content;
+    textareaRef.current.selectionStart = start.length + char.length;
+    textareaRef.current.selectionEnd = start.length + char.length;
+    textareaRef.current.focus();
   }
-
-  useEffect(() => { echo() }, [content]);
-
-  const insertCharacter = useCallback(
-    (character: string) => {
-      if (textareaRef.current) {
-        const start = content.substring(0, textareaRef.current.selectionStart);
-        const end = content.substring(textareaRef.current.selectionEnd);
-        const cursorPos = textareaRef.current.selectionStart; // カーソル位置を取得
-        const newContent = start + character + end;
-        setContent(newContent);
-        const newCursorPos = cursorPos + character.length; // 新しいカーソル位置を計算
-        textareaRef.current.selectionStart = newCursorPos;
-        textareaRef.current.selectionEnd = newCursorPos;
-        textareaRef.current.focus();
-        console.log([cursorPos, newCursorPos]);
-      }
-    }, [content]);
   
   const ime_items = ime_characters.map(chara =>
     <button
@@ -57,12 +48,12 @@ function App() {
 
       <div className="editor-container">
         <div>
-          <textarea className="edit" ref={textareaRef} value={content} onChange={(e) => setContent(e.target.value)}></textarea>
+          <textarea className="edit" ref={textareaRef} defaultValue={""}></textarea>
           <div className="ime-container">
             {ime_items}
           </div>
         </div>
-        <div className="view">{content}</div>
+        <div className="view">{}</div>
       </div>
       
     </div>
