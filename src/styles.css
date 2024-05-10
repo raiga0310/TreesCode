@@ -1,5 +1,10 @@
+@font-face {
+  font-family: 'Cascadia/Mono';
+  src: url('fonts/CASCADIAMONO.TTF');
+}
+
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Cascadia/Mono'!important;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
@@ -22,6 +27,8 @@ textarea {
   box-sizing: border-box;
   background-color: #e8e8e8;
   border: 1.5px solid #bbbbbb;
+  font-family: 'Cascadia/Mono';
+  font-size: large;
 }
 
 input,

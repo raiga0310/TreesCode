@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { useEffect, useRef } from "react";
+import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import "./App.css";
 
 const ime_characters = [
@@ -42,6 +42,24 @@ function App() {
         {chara.chara}
     </button>
   )
+
+  useEffect(() => {
+    let unlisten: UnlistenFn;
+    async function open_file() {
+      interface ContentPayload {
+        content: string,
+        path: string
+      }
+      unlisten = await listen<ContentPayload>("open_file", event => {
+        console.log(event.payload.content);
+        if (textareaRef.current == null) {return () => {}} 
+        textareaRef.current.value = event.payload.content;
+      })
+    }
+    open_file();
+
+    return () => {};
+  }, []);
 
   return (
     <div className="container">
